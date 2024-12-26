@@ -2,10 +2,21 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                sh 'make' 
-                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true 
+                git branch: 'main', url: 'https://github.com/Jedays-test/prueba.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                sh 'npm run lint'
             }
         }
     }
