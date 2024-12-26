@@ -4,7 +4,6 @@ pipeline {
     
     tools {
         maven 'mvn'
-        jdk 'jdk8'
     }
     
     options {
