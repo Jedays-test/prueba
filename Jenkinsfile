@@ -2,19 +2,24 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Jedays-test/prueba.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
         stage('Build') {
             steps {
-                echo 'Building..'
+                sh 'npm run build'
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
+                sh 'npm test'
             }
         }
     }
