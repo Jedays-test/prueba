@@ -76,11 +76,6 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            // Recopila artefactos (opcional)
-            // archiveArtifacts artifacts: 'workspace/build/libs/*.jar', allowEmptyArchive: true
-        }
         failure {
             // Notificaciones en caso de fallo (opcional)
             echo 'El pipeline ha fallado!'
