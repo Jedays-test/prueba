@@ -10,13 +10,21 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                npm install
             }
         }
 
         stage('Lint') {
             steps {
-                sh 'npm run lint'
+                sh 'npm run lint' // Si aún necesitas usar sh para alguna tarea específica
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('your_sonar_server') {
+                    sh 'sonarScanner'
+                }
             }
         }
     }
