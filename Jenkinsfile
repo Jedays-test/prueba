@@ -1,21 +1,6 @@
 
 pipeline {    
     agent any
-    
-    tools {
-        maven 'mvn'
-    }
-    
-    options {
-    	buildDiscarder(logRotator(numToKeepStr: '5'))
-    }
-    
-    environment {
-    	groupId = readMavenPom().getGroupId()
-	artifactId = readMavenPom().getArtifactId()
-	version = readMavenPom().getVersion()
-    }
-    
     stages {
         stage ('Initialize') {
             steps {
