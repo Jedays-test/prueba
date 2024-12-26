@@ -1,20 +1,21 @@
 pipeline {
     agent any
 
-        stages {
-            stage ('install') {
-                steps {
-                    dir("build_node"){
-                      sh "npm install"
-                    } 
-                }
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
             }
-            stage ('test') {
-                steps {
-                  dir("build_node"){
-                        sh "npm test"
-                  }
-                }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
             }
-		}
-	}	
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}
