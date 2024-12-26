@@ -75,13 +75,4 @@ pipeline {
           }
         }
     }
-
-        failure {
-            // Notificaciones en caso de fallo (opcional)
-            echo 'El pipeline ha fallado!'
-            // Puedes agregar notificaciones por correo electrónico, Slack, etc. aquí
-        }
-        success {
-            echo 'El pipeline se ha completado exitosamente!'
-        }
-    }
+}
