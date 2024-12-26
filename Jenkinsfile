@@ -1,11 +1,11 @@
 pipeline {
-    agent any {
-        docker { image 'node:16.13.1-alpine' }
-    }
+    agent any
+
     stages {
-        stage('Test') {
+        stage('Build') {
             steps {
-                sh 'node --version'
+                sh 'make' 
+                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true 
             }
         }
     }
