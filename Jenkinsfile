@@ -7,14 +7,16 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Jedays-test/prueba.git'
             }
         }
-        stage('Build') {
+
+        stage('Build Docker Image') {
             steps {
-                sh 'npm run build'
+                sh 'docker build -t mi-imagen:latest .'
             }
         }
-        stage('Test') {
+
+        stage('Run Tests in Docker Container') {
             steps {
-                sh 'npm test'
+                sh 'docker run -it mi-imagen:latest npm test'
             }
         }
     }
