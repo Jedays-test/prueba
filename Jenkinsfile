@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     // Cambiar el nombre de la ejecución para mostrar el número de build, el servicio y la rama
-                    currentBuild.displayName = "#${currentBuild.number} - thappp-app-front - ${params.BRANCH}"
+                    currentBuild.displayName = "#${currentBuild.number} - Prueba - ${params.BRANCH}"
                     
                     // Realizar el checkout del servicio seleccionado y la rama
                     checkout([$class: 'GitSCM',
