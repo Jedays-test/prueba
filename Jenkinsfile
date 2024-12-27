@@ -10,7 +10,9 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                   
+                    // Cambiar el nombre de la ejecución para mostrar el número de build, el servicio y la rama
+                    currentBuild.displayName = "#${currentBuild.number} - thappp-app-front - ${params.BRANCH}"
+                    
                     // Realizar el checkout del servicio seleccionado y la rama
                     checkout([$class: 'GitSCM',
                         branches: [[name: params.BRANCH]],
@@ -18,7 +20,7 @@ pipeline {
                         extensions: [[$class: 'CloneOption', depth: 1, noTags: true, reference: '', shallow: true]],
                         submoduleCfg: [],
                         userRemoteConfigs: [[
-                            url: 'URL_REPO.git',
+                            url: 'https://github.com/Jedays-test/prueba.git',
                             credentialsId: 'Bitbucket-credentials'
                         ]]
                     ])
