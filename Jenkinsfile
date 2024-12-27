@@ -1,78 +1,62 @@
 pipeline {
-    agent any // Ejecutar en cualquier agente disponible
+    agent any
+
+
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'main', description: 'prueba')
+    }
 
     stages {
         stage('Checkout') {
             steps {
-                // Intenta usar un directorio de trabajo persistente para evitar clonados repetidos
-                dir('workspace') {
-                    // Si el directorio ya existe, realiza un fetch en lugar de un clone
-                    sh '''
-                        if [ -d ".git" ]; then
-                            git fetch origin
-                            git checkout origin/main // o la rama que corresponda
-                        else
-                            git clone https://github.com/Jedays-test/prueba.git .
-                        fi
-                    '''
+                script {
+                    // Cambiar el nombre de la ejecución para mostrar el número de build, el servicio y la rama
+                    currentBuild.displayName = "#${currentBuild.number} - thappp-app-front - ${params.BRANCH}"
+                    
+                    // Realizar el checkout del servicio seleccionado y la rama
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: params.BRANCH]],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [[$class: 'CloneOption', depth: 1, noTags: true, reference: '', shallow: true]],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[
+                            url: 'URL_REPO.git',
+                            credentialsId: 'Bitbucket-credentials'
+                        ]]
+                    ])
                 }
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                dir('workspace') {
-                    // Adapta esto a tu sistema de build (Gradle, Maven, npm, etc.)
-                    // sh './gradlew clean build' // Ejemplo con Gradle
-                    sh 'mvn clean install' // Ejemplo con Maven
-                    // sh 'npm install' // Ejemplo con npm
-                    // sh 'npm run build' // Ejemplo con npm para construir el proyecto
-                }
+                sh 'npm install'
             }
         }
-
-        stage('Test') {
+        
+        stage('Build Application') {
             steps {
-                dir('workspace') {
-                    // Ejecuta las pruebas unitarias
-                    //sh './gradlew test' // Ejemplo con Gradle
-                     sh 'mvn test' // Ejemplo con Maven
-                    // sh 'npm test' // Ejemplo con npm
-                }
-            }
-            post {
-                // Recopila los resultados de las pruebas (JUnit XML) para visualizarlos en Jenkins
-                always {
-                    junit 'workspace/build/test-results/**/*.xml' // Ajusta la ruta si es necesario
-                }
+                sh 'npm run build --prod'
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Desplegar con Docker Compose') {
             steps {
-                dir('workspace') {
-                    // Analiza el código con SonarQube (opcional)
-                    withSonarQubeEnv('SonarQube Server') { // 'SonarQube Server' es el nombre configurado en Jenkins
-                        sh './gradlew sonarqube' // Ejemplo con Gradle
-                        // sh 'mvn sonar:sonar' // Ejemplo con Maven
-                    }
+                script {
+                    // Ejecutar el Docker Compose dentro de la carpeta del servicio seleccionado
+                    sh 'docker-compose down' // Asegurarse de detener contenedores existentes antes de crear nuevos
+                    sh 'docker-compose up -d --build' // Construir y ejecutar los contenedores
                 }
             }
         }
+    }
 
-        stage('Package') {
-            steps {
-                dir('workspace') {
-                  // Empaqueta la aplicación para su distribución (ejemplo: crear un JAR o WAR)
-                  sh './gradlew assemble' // Ejemplo con Gradle
-                }
-            }
+    post {
+        success {
+            echo 'Despliegue completado con éxito'
         }
-
-        stage('Publish Artifacts') {
-          steps {
-            archiveArtifacts artifacts: 'workspace/build/libs/*.jar', allowEmptyArchive: true
-          }
+        failure {
+            echo 'El despliegue falló'
         }
     }
 }
